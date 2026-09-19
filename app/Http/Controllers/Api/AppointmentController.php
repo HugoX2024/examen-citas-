@@ -28,7 +28,7 @@ class AppointmentController extends Controller
 
         $appointment = Appointment::create($data);
 
-        return response()->json($appointment, 201);
+        return response()->json($appointment->fresh(), 201);
     }
 
     public function show(Appointment $appointment): JsonResponse
