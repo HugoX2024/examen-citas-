@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
@@ -13,8 +14,8 @@ class AppointmentController extends Controller
     public function index(Request $request): JsonResponse
     {
         $appointments = Appointment::query()
-            ->when($request->filled('start'), fn ($query) => $query->where('ends_at', '>=', $request->string('start')))
-            ->when($request->filled('end'), fn ($query) => $query->where('starts_at', '<=', $request->string('end')))
+            ->when($request->filled('start'), fn ($query) => $query->where('ends_at', '>=', Carbon::parse($request->input('start'))->toDateTimeString()))
+            ->when($request->filled('end'), fn ($query) => $query->where('starts_at', '<=', Carbon::parse($request->input('end'))->toDateTimeString()))
             ->orderBy('starts_at')
             ->get();
 
