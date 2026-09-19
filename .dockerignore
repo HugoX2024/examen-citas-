@@ -1,0 +1,9 @@
+.git
+.tools
+laravel-app
+laravel-staging
+vendor
+node_modules
+storage/logs
+*.log
+.env
