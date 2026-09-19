@@ -45,4 +45,27 @@ class AppointmentApiTest extends TestCase
 
         $this->assertDatabaseHas('appointments', ['id' => $appointment->id, 'status' => Appointment::STATUS_CANCELLED]);
     }
+
+    public function test_a_standard_update_cannot_cancel_an_appointment_without_a_reason(): void
+    {
+        $appointment = Appointment::query()->create([
+            'patient_name' => 'Ana López',
+            'doctor_name' => 'Carlos Méndez',
+            'specialty' => 'Medicina interna',
+            'starts_at' => '2026-10-01 09:00:00',
+            'ends_at' => '2026-10-01 09:30:00',
+            'status' => Appointment::STATUS_SCHEDULED,
+        ]);
+
+        $this->putJson("/api/appointments/{$appointment->id}", [
+            'patient_name' => 'Ana López',
+            'doctor_name' => 'Carlos Méndez',
+            'specialty' => 'Medicina interna',
+            'starts_at' => '2026-10-01 10:00:00',
+            'ends_at' => '2026-10-01 10:30:00',
+            'status' => Appointment::STATUS_CANCELLED,
+        ])->assertOk()->assertJsonPath('status', Appointment::STATUS_SCHEDULED);
+
+        $this->assertDatabaseHas('appointments', ['id' => $appointment->id, 'status' => Appointment::STATUS_SCHEDULED]);
+    }
 }

@@ -12,6 +12,7 @@ const localDateTime = (date) => {
     const pad = value => String(value).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
+const formDateTime = value => value ? value.replace('Z', '').slice(0, 16) : '';
 const request = async (url, method = 'GET', data = null) => {
     const response = await fetch(url, { method, headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: data ? JSON.stringify(data) : null });
     if (!response.ok) {
@@ -25,8 +26,8 @@ const fields = (appointment = {}) => `<form id="appointment-form"><div class="fo
     <div class="field"><label>Documento</label><input name="patient_document" value="${appointment.patient_document || ''}" maxlength="30"></div>
     <div class="field"><label>Médico *</label><input required name="doctor_name" value="${appointment.doctor_name || ''}" maxlength="120"></div>
     <div class="field"><label>Especialidad *</label><input required name="specialty" value="${appointment.specialty || ''}" maxlength="80"></div>
-    <div class="field"><label>Inicio *</label><input required type="datetime-local" name="starts_at" value="${appointment.starts_at ? localDateTime(new Date(appointment.starts_at)) : ''}"></div>
-    <div class="field"><label>Fin *</label><input required type="datetime-local" name="ends_at" value="${appointment.ends_at ? localDateTime(new Date(appointment.ends_at)) : ''}"></div>
+    <div class="field"><label>Inicio *</label><input required type="datetime-local" name="starts_at" value="${formDateTime(appointment.starts_at)}"></div>
+    <div class="field"><label>Fin *</label><input required type="datetime-local" name="ends_at" value="${formDateTime(appointment.ends_at)}"></div>
     <div class="field full"><label>Notas clínicas</label><textarea name="notes" rows="3" maxlength="1000">${appointment.notes || ''}</textarea></div>
     </div><div id="form-error"></div><div class="form-actions">${appointment.id && appointment.status !== 'cancelled' ? '<button type="button" class="danger-btn" id="cancel-appointment">Cancelar cita</button>' : ''}<button type="button" class="secondary-btn" data-close-modal>Volver</button><button class="new-btn">${appointment.id ? 'Guardar cambios' : 'Agendar cita'}</button></div></form>`;
 const getFormData = form => Object.fromEntries(new FormData(form).entries());

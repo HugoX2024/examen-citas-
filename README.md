@@ -12,6 +12,33 @@ Módulo funcional para agendar, reprogramar y cancelar citas médicas dentro de 
 - Prevención de cruces de horario para el mismo médico.
 - API REST propia y base de datos MySQL en Docker.
 
+## Ejecución manual (sin Docker)
+
+### Requisitos
+
+- PHP 8.2 o superior, con las extensiones `pdo_sqlite` y `sqlite3` habilitadas.
+- Composer 2.
+
+En PowerShell, entra en la carpeta del proyecto y ejecuta los siguientes comandos una única vez:
+
+```powershell
+composer install
+Copy-Item .env.example .env
+New-Item -ItemType File -Path database/database.sqlite -Force
+php artisan key:generate
+php artisan migrate
+```
+
+Para iniciar la aplicación:
+
+```powershell
+php artisan serve
+```
+
+Abre `http://127.0.0.1:8000` en el navegador. Para detener el servidor usa `Ctrl + C` en la terminal.
+
+> Si no tienes Composer instalado globalmente, descárgalo desde `https://getcomposer.org/download/` o ejecuta Composer mediante su archivo `.phar` con `php composer.phar install`.
+
 ## Ejecución con Docker
 
 ```bash
@@ -44,13 +71,12 @@ Ejemplo para agendar:
 }
 ```
 
-## Pruebas
+## Pruebas automatizadas
 
 Con PHP y Composer instalados:
 
-```bash
-composer install
+```powershell
 php artisan test
 ```
 
-La prueba funcional cubre la creación y cancelación de citas.
+Las pruebas cubren la creación, la cancelación con trazabilidad y el bloqueo de cancelaciones realizadas por una actualización normal.

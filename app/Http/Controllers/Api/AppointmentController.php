@@ -7,7 +7,6 @@ use App\Models\Appointment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
 {
@@ -71,9 +70,7 @@ class AppointmentController extends Controller
             'specialty' => ['required', 'string', 'max:80'],
             'starts_at' => ['required', 'date'],
             'ends_at' => ['required', 'date', 'after:starts_at'],
-            'status' => ['sometimes', Rule::in([Appointment::STATUS_SCHEDULED, Appointment::STATUS_CANCELLED])],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'cancellation_reason' => ['nullable', 'string', 'max:500'],
         ]);
     }
 
