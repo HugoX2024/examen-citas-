@@ -45,6 +45,22 @@ class AppointmentController extends Controller
         return response()->json($appointment->fresh());
     }
 
+    public function destroy(Request $request, Appointment $appointment): JsonResponse
+    {
+        abort_if($appointment->status === Appointment::STATUS_CANCELLED, 422, 'La cita ya fue cancelada.');
+
+        $data = $request->validate([
+            'cancellation_reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $appointment->update([
+            'status' => Appointment::STATUS_CANCELLED,
+            'cancellation_reason' => $data['cancellation_reason'],
+        ]);
+
+        return response()->json($appointment->fresh());
+    }
+
     private function validated(Request $request): array
     {
         return $request->validate([
@@ -62,6 +78,10 @@ class AppointmentController extends Controller
 
     private function ensureTimeRangeIsAvailable(array $data, ?Appointment $except = null): void
     {
+        if (($data['status'] ?? Appointment::STATUS_SCHEDULED) === Appointment::STATUS_CANCELLED) {
+            return;
+        }
+
         $conflict = Appointment::query()
             ->where('doctor_name', $data['doctor_name'])
             ->where('status', Appointment::STATUS_SCHEDULED)
